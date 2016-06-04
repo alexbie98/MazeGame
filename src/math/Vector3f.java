@@ -20,7 +20,7 @@ public class Vector3f {
 	 * returns a string in form [Vector3f][x][y][z]
 	 */
 	public String toString(){
-		return "[Vector3f][x="+this.x+"][y="+this.y+"][z="+this.x+"]";
+		return "[Vector3f][x="+this.x+"][y="+this.y+"][z="+this.z+"]";
 	}
 	
 	/**

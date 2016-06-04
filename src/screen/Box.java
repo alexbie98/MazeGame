@@ -2,6 +2,7 @@ package screen;
 
 import graphics.Shader;
 import graphics.Texture;
+import main.Renderable;
 import math.Matrix4f;
 import math.Vector3f;
 
@@ -21,16 +22,43 @@ public class Box extends Renderable{
 	protected void defineVertices() {
 		
 		vertices = new float []{
-			location.x, location.y, location.z, 					// left-top-near
-			location.x + length, location.y, location.z,			// right-top-near
-			location.x, location.y - length, location.z,			// left-bottom-near
-			location.x + length, location.y - length, location.z,	// right-bottom-near
 			
+			//front face
+			location.x, location.y, location.z, 							// left-top-near 		0
+			location.x, location.y - length, location.z,					// left-bottom-near		1
+			location.x + length, location.y - length, location.z,			// right-bottom-near	2
+			location.x + length, location.y, location.z,					// right-top-near		3
 			
-			location.x, location.y, location.z-length, 						// left-top-far
-			location.x + length, location.y, location.z-length,				// right-top-far
-			location.x, location.y - length, location.z-length,				// left-bottom-far
-			location.x + length, location.y - length, location.z-length,	// right-bottom-far
+			//back face
+			location.x + length, location.y, location.z+length,				// right-top-far		4
+			location.x + length, location.y - length, location.z+length,	// right-bottom-far		5
+			location.x, location.y - length, location.z+length,				// left-bottom-far		6
+			location.x, location.y, location.z+length, 						// left-top-far			7
+			
+			//left face
+			location.x, location.y, location.z+length, 						// left-top-far			8
+			location.x, location.y - length, location.z+length,				// left-bottom-far		9
+			location.x, location.y - length, location.z,					// left-bottom-near		10
+			location.x, location.y, location.z, 							// left-top-near		11
+			
+			//right face
+			location.x + length, location.y, location.z,					// right-top-near		12
+			location.x + length, location.y - length, location.z,			// right-bottom-near	13
+			location.x + length, location.y - length, location.z+length,	// right-bottom-far		14
+			location.x + length, location.y, location.z+length,				// right-top-far		15
+			
+			//bottom face
+			location.x, location.y - length, location.z,					// left-bottom-near		16
+			location.x, location.y - length, location.z+length,				// left-bottom-far		17
+			location.x + length, location.y - length, location.z+length,	// right-bottom-far		18
+			location.x + length, location.y - length, location.z,			// right-bottom-near	19
+			
+			//top face
+			location.x, location.y, location.z+length, 						// left-top-far			20
+			location.x, location.y, location.z, 							// left-top-near 		21
+			location.x + length, location.y, location.z,					// right-top-near		22
+			location.x + length, location.y, location.z+length,				// right-top-far		23
+			
 
 		};
 		
@@ -39,13 +67,41 @@ public class Box extends Renderable{
 
 	@Override
 	protected void defineTexture() {
-		texture = new Texture("res/white.jpg");
+		texture = new Texture("res/stone.png");
 		
 		textureCoordinates = new float []{
+				
+				0.0f, 1.0f,
 				0.0f, 0.0f,
 				1.0f, 0.0f,
 				1.0f, 1.0f,
+				
 				0.0f, 1.0f,
+				0.0f, 0.0f,
+				1.0f, 0.0f,
+				1.0f, 1.0f,
+				
+				0.0f, 1.0f,
+				0.0f, 0.0f,
+				1.0f, 0.0f,
+				1.0f, 1.0f,
+				
+				0.0f, 1.0f,
+				0.0f, 0.0f,
+				1.0f, 0.0f,
+				1.0f, 1.0f,
+				
+				0.0f, 1.0f,
+				0.0f, 0.0f,
+				1.0f, 0.0f,
+				1.0f, 1.0f,
+				
+				0.0f, 1.0f,
+				0.0f, 0.0f,
+				1.0f, 0.0f,
+				1.0f, 1.0f,
+				
+				
 				
 		};
 		
@@ -53,7 +109,7 @@ public class Box extends Renderable{
 
 	@Override
 	protected void defineShader() {
-		shader = Shader.TILE;
+		shader = Shader.WORLD;
 		
 	}
 	
@@ -61,23 +117,23 @@ public class Box extends Renderable{
 	protected void defineIndices(){
 		indices = new byte[]{
 				
-				0, 1, 3, //near face
-				3, 2, 0,
+				0, 1, 2, //near face
+				2, 3, 0,
 				
-				5, 4, 6, //far face
-				6, 7, 5,
+				4, 5, 6, //far face
+				6, 7, 4,
 				
-				5, 4, 1, //top face
-				1, 0, 4,
+				8, 9, 10, //left face
+				10, 11, 8,
 				
-				2, 3, 7, //bottom face
-				7, 6, 2,
+				12, 13, 14, //right face
+				14, 15, 12,
 				
-				1, 5, 7, //right face
-				7, 3, 1,
+				16, 17, 18, //bottom face
+				18, 19, 16,
 				
-				4, 0, 2, //left face
-				2, 6, 4,
+				20, 21, 22, //top face
+				22, 23, 20,
 				
 		};
 	}

@@ -1,4 +1,4 @@
-package screen;
+package main;
 
 import graphics.Shader;
 
@@ -14,8 +14,8 @@ public abstract class Renderable {
 	
 	
 	protected VertexArray vertexArray;
-	protected Texture texture;
-	protected Shader shader;
+	public Texture texture;
+	public Shader shader;
 	
 	
 	protected float [] vertices;

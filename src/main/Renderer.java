@@ -1,4 +1,4 @@
-package screen;
+package main;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -6,16 +6,16 @@ import java.util.Map;
 
 import graphics.Shader;
 import graphics.Texture;
+import states.GameState;
 
 public class Renderer {
 
 	private Renderer(){}
 	
-	private static ArrayList<Renderable> renderList = new ArrayList<Renderable>();
 	
-	public static void render(){
+	public static void render(GameState state){
 
-		Map<Texture, Map<Shader, ArrayList<Renderable>>> objects = buildObjectMap();
+		Map<Texture, Map<Shader, ArrayList<Renderable>>> objects = buildObjectMap(state);
 		
 
 		
@@ -35,11 +35,11 @@ public class Renderer {
 		}
 	}
 	
-	private static Map<Texture, Map<Shader, ArrayList<Renderable>>> buildObjectMap(){
+	private static Map<Texture, Map<Shader, ArrayList<Renderable>>> buildObjectMap(GameState state){
 		
 		Map<Texture, Map<Shader, ArrayList<Renderable>>> map = new HashMap<Texture, Map<Shader, ArrayList<Renderable>>>();
 
-		for(Renderable r: renderList)
+		for(Renderable r: state.getRenderables())
 			{
 				Texture t = r.texture;
 				Shader s = r.shader;
@@ -56,15 +56,9 @@ public class Renderer {
 			}
 
 		
+		
+
 		return map;
 	}
 	
-	public static void addRenderable(Renderable r){
-		renderList.add(r);
-	}
-	
-	public static void removeRenderable(Renderable r){
-		renderList.remove(r);
-
-	}
 }

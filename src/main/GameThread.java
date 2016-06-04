@@ -1,6 +1,15 @@
 package main;
 
-import java.awt.Font;
+
+import static org.lwjgl.glfw.GLFW.glfwInit;
+import static org.lwjgl.opengl.GL11.GL_BLEND;
+import static org.lwjgl.opengl.GL11.GL_FALSE;
+import static org.lwjgl.opengl.GL11.GL_ONE_MINUS_SRC_ALPHA;
+import static org.lwjgl.opengl.GL11.GL_SRC_ALPHA;
+import static org.lwjgl.opengl.GL11.glBlendFunc;
+import static org.lwjgl.opengl.GL11.glEnable;
+import static org.lwjgl.opengl.GL13.GL_TEXTURE1;
+import static org.lwjgl.opengl.GL13.glActiveTexture;
 
 import org.lwjgl.Version;
 import org.lwjgl.glfw.GLFW;
@@ -15,7 +24,6 @@ import graphics.Shader;
 import math.Matrix4f;
 import math.Vector3f;
 import screen.Box;
-import screen.Renderer;
 
 public class GameThread implements Runnable{
 	
@@ -23,10 +31,10 @@ public class GameThread implements Runnable{
 	private long window;
 	private long monitor;
 	
-	
+
+	public static final int WIDTH = 1280, HEIGHT = 720;
 	
 
-	private int WIDTH = 1280, HEIGHT = 720;
 	
 	@Override
 	public void run() {
@@ -57,7 +65,10 @@ public class GameThread implements Runnable{
 		//setup error callback
 		GLFWErrorCallback.createPrint(System.err).set();
 		
-		GLFW.glfwInit();
+		if(glfwInit() == GL_FALSE)
+		{
+			// TODO: Handle error
+		}
 		
 		monitor = GLFW.glfwGetPrimaryMonitor();
 		
@@ -84,29 +95,35 @@ public class GameThread implements Runnable{
 		
 		
 		
+		
+		
 		GLFW.glfwMakeContextCurrent(window);
-		
-		GLFW.glfwSwapInterval(1);
-		
+		GL.createCapabilities();
 		GLFW.glfwShowWindow(window);
 		
-		GL.createCapabilities();
+		GL11.glEnable(GL11.GL_DEPTH_TEST);
 		
-		Shader.loadAll();
+		//enable textures
+		glActiveTexture(GL_TEXTURE1);
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
+		
+		
+		
+		GL11.glClearColor(0.2f, 0.4f, 0.8f, 1.0f);
+		
 		
 		
 		System.out.println("Running LWJGL Version "+ Version.getVersion()+"!");
 		System.out.println("Running OpenGL Version "+GL11.glGetString(GL11.GL_VERSION)+"!");
 		
+		Shader.loadAll();
 		
-		Box box = new Box(5.0f, new Vector3f(0.0f, 0.0f, 0.0f));
+		GameStateManager.setWindow(window);
+		GameStateManager.goTo(GameStateManager.Test);
 		
-		Shader.TILE.enable();
-		Shader.TILE.setUniform4f("pr_matrix", Matrix4f.orthographic(10.0f, 10.0f, 10.0f, 10.0f, 10.0f, 10.0f));
-		Shader.TILE.setUniform4f("vw_matrix", Matrix4f.identity());
-		Shader.TILE.disable();
 		
-		Renderer.addRenderable(box);
+		
 		
 
 	}
@@ -115,25 +132,19 @@ public class GameThread implements Runnable{
 
 		GLFW.glfwPollEvents();
 		
+		GameStateManager.update();
+		
 		
 
 	}
 	
 	private void render(){
-		GL.createCapabilities();
 		
 		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
 		
-		GL11.glClearColor(0.2f, 0.4f, 0.8f, 1.0f);
+		GameStateManager.render();
 		
-		GL11.glBegin(GL11.GL_QUADS);
-		GL11.glVertex2f(0, 0);
-		GL11.glVertex2f(0.5f, 0);
-		GL11.glVertex2f(0.5f, -0.5f);
-		GL11.glVertex2f(0, -0.5f);
-		GL11.glEnd();
-		
-		Renderer.render();
+
 		
 		GLFW.glfwSwapBuffers(window);
 		

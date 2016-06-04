@@ -16,7 +16,7 @@ public class Shader {
 	public static final int TCOORD_ATTRIB = 1;
 	
 	
-	public static Shader TILE;
+	public static Shader WORLD;
 	
 	private int ID;
 	private Map<String,Integer> locationCache = new HashMap<String, Integer>();
@@ -28,7 +28,7 @@ public class Shader {
 	}
 	
 	public static void loadAll(){
-		TILE = new Shader("shader/tileVERT.glsl","shader/tileFRAG.glsl");
+		WORLD = new Shader("shader/worldVERT.glsl","shader/worldFRAG.glsl");
 
 	}
 	

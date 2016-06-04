@@ -15,6 +15,7 @@ public float[] elements = new float[4 * 4];
 	
 	public Matrix4f(){}
 	
+	
 
 	public static Matrix4f identity(){
 		
@@ -108,6 +109,7 @@ public float[] elements = new float[4 * 4];
 		
 		return result;
 	}
+	
 	
 	public Matrix4f multiply(Matrix4f matrix){
 		Matrix4f result = new Matrix4f();
