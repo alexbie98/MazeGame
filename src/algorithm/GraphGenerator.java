@@ -54,11 +54,18 @@ public class GraphGenerator {
 				int nodeNum = y*width +x;
 				
 				if (nodeNum%width - (nodeNum-1)%width >=0){
-					g.addEdge(new Edge(nodeNum, nodeNum-1, 0, true));
+					if ((nodeNum-1)>=0){
+						g.addEdge(new Edge(nodeNum, nodeNum-1, 0, true));
+					}
+					
+
 				}
 				
 				if ((nodeNum+1)%width - nodeNum%width >=0){
-					g.addEdge(new Edge(nodeNum, nodeNum+1, 0, true));
+					
+					if ((nodeNum+1)>=(width*height -1)){
+						g.addEdge(new Edge(nodeNum, nodeNum+1, 0, true));
+					}
 				}
 				
 				if ((nodeNum-width) >=0){

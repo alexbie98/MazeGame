@@ -40,6 +40,16 @@ public class Graph {
 		
 	}
 	
+	
+	public Graph copy(){
+		
+		Graph g = new Graph();
+		g.edges.addAll(this.edges);
+		g.nodes.addAll(this.nodes);
+		
+		return g;
+	}
+	
 
 
 }
