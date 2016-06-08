@@ -107,6 +107,17 @@ public float[] elements = new float[4 * 4];
 	public static Matrix4f perspective(float fov, float aspect, float znear, float zfar){
 		Matrix4f result = identity();
 		
+		float h = (float) (1.0f/Math.tan(fov*(Math.PI/360.0)));
+		float negDepth = znear -zfar;
+	  	
+	  	result.elements[0] = h/aspect;
+	  	result.elements[5] = h;
+	  	result.elements[10] = (zfar + znear)/negDepth;
+	  	result.elements[11] = -1;
+	  	result.elements[14] = 2.0f/(zfar + znear)/negDepth;;
+	  	result.elements[15] = 0.0f;
+	  	
+		
 		return result;
 	}
 	
@@ -147,7 +158,7 @@ public float[] elements = new float[4 * 4];
 		Vector3f result = new Vector3f();
 		result.x = elements[0]*position.x + elements[4]*position.y + elements[8]*position.z + elements[12]*1.0f;
 		result.y = elements[1]*position.x + elements[5]*position.y + elements[9]*position.z + elements[13]*1.0f;
-		result.z = elements[2]*position.x + elements[5]*position.y + elements[10]*position.z + elements[14]*1.0f;
+		result.z = elements[2]*position.x + elements[6]*position.y + elements[10]*position.z + elements[14]*1.0f;
 
 		return result;
 	}

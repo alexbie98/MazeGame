@@ -53,7 +53,7 @@ public class Player implements Updateable{
 		});
 		
 		
-		System.out.println(location.toString());
+//		System.out.println(location.toString());
 		
 
 		

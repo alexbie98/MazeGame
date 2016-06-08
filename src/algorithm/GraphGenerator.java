@@ -53,27 +53,25 @@ public class GraphGenerator {
 				
 				int nodeNum = y*width +x;
 				
-				if ((nodeNum-1) >=0){
+				if (nodeNum%width - (nodeNum-1)%width >=0){
 					g.addEdge(new Edge(nodeNum, nodeNum-1, 0, true));
+				}
+				
+				if ((nodeNum+1)%width - nodeNum%width >=0){
+					g.addEdge(new Edge(nodeNum, nodeNum+1, 0, true));
 				}
 				
 				if ((nodeNum-width) >=0){
 					g.addEdge(new Edge(nodeNum, nodeNum-width, 0, true));
 				}
 				
-				if ((nodeNum+1) <= (width*height-1)){
-					g.addEdge(new Edge(nodeNum, nodeNum+1, 0, true));
-				}
-				
+
 				if ((nodeNum+width) <= (width*height-1)){
 					g.addEdge(new Edge(nodeNum, nodeNum+width, 0, true));
 				}
 				
 			}
 		}
-		
-		g.edges.remove(0);
-		g.edges.remove(g.edges.size()-1);
 		
 		for (Edge e: g.edges){
 			
@@ -83,5 +81,22 @@ public class GraphGenerator {
 		
 		return g;
 		
+	}
+	
+	/**
+	 * subtracts a subgraph of a (b) from the graph a
+	 */
+	public static Graph subtract(Graph a, Graph b){
+		Graph g = new Graph();
+		
+		for (Edge aEdge: a.edges){
+			
+			if (!b.edges.contains(aEdge)){
+				g.addEdge(aEdge);
+			}
+
+		}
+		
+		return g;
 	}
 }

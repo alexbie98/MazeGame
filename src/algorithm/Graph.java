@@ -23,6 +23,7 @@ public class Graph {
 		for (Edge edge: edges){
 			if (edge.startsAt(e.nodeA) && edge.finishesAt(e.nodeB) || edge.startsAt(e.nodeB) && edge.finishesAt(e.nodeA) ){
 				edges.remove(edge);
+				break;
 			}
 		}
 		
