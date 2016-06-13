@@ -148,6 +148,9 @@ public class Wall extends Renderable{
 	
 	public Wall rotated(Matrix4f rotation){
 		
+		if (vertexArray==null){ 
+			System.err.println("build and generate first before rotating!");
+		}
 		
 //		System.out.println("original");
 //		for (int i = 0; i< 24;i++){
@@ -155,7 +158,7 @@ public class Wall extends Renderable{
 //			System.out.println(vertices[i*3]+" "+vertices[i*3+1]+" "+vertices[i*3+2]);
 //		}
 		
-		Vector3f [] vectorVertices = new Vector3f [24];
+		Vector3f [] vectorVertices = new Vector3f [vertices.length/3];
 		
 		for (int i = 0; i< 24;i++){
 			

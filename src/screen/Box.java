@@ -6,7 +6,7 @@ import main.Renderable;
 import math.Matrix4f;
 import math.Vector3f;
 
-public class Box extends Renderable{
+public class Box extends Renderable {
 	
 	public float length = 0;
 
@@ -69,7 +69,7 @@ public class Box extends Renderable{
 	protected void defineTexture() {
 		texture = new Texture("res/stone.png");
 		
-		textureCoordinates = new float []{
+		textureCoordinates = new float [] {
 				
 				0.0f, 1.0f,
 				0.0f, 0.0f,
@@ -114,7 +114,7 @@ public class Box extends Renderable{
 	}
 	
 	@Override
-	protected void defineIndices(){
+	protected void defineIndices() {
 		indices = new byte[]{
 				
 				0, 1, 2, //near face

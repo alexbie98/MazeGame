@@ -29,6 +29,7 @@ public abstract class GameState {
 		
 		renderables.add(r);
 	}
+
 	
 	public ArrayList<Updateable> getUpdateables(){
 		
