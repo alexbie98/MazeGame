@@ -5,10 +5,14 @@ import java.util.ArrayList;
 import algorithm.Edge;
 import algorithm.Graph;
 import algorithm.GraphAlgorithm;
+import graphics.Texture;
 import math.Matrix4f;
 import math.Vector3f;
 
 public class Maze {
+	
+	public static Texture TEX_STRAIGHT = new Texture("res/forward.png");
+	public static Texture TEX_BENT = new Texture("res/left.png");
 	
 	public final int width;
 	public final int length;
@@ -68,7 +72,6 @@ public class Maze {
 			float largerZ = ((nodeACoords.z>nodeBCoords.z) ? nodeACoords.z : nodeBCoords.z);
 			float largerX = ((nodeACoords.x>nodeBCoords.x) ? nodeACoords.x : nodeBCoords.x);
 			
-			System.out.println(e.toString());
 			
 			if (Math.abs(e.nodeA-e.nodeB) == width){
 				walls.add(new Wall(size, new Vector3f(location.x+nodeACoords.x*size, location.y, location.z+(largerZ + Wall.THICK)*size)));
@@ -102,11 +105,114 @@ public class Maze {
 		
 		for (int n: solution.nodes){
 			
+			ArrayList<Integer> startEnd = new ArrayList<>();
+			
+			
+			if (n!=solution.nodes.get(0)){
+				startEnd.add(solution.nodes.get(solution.nodes.indexOf(n)-1));
+			}
+			else{
+				startEnd.add(solution.nodes.get(0)-width);
+			}
+			
+			if (n!=solution.nodes.get(solution.nodes.size()-1)){
+				startEnd.add(solution.nodes.get(solution.nodes.indexOf(n)+1));
+			}
+			else{
+				startEnd.add(solution.nodes.get(solution.nodes.size()-1)+width);
+			}
+			
+			
+//			for (Edge e: solution.edges){
+//			
+//					
+//				if (e.nodeA == n){
+//					startEnd.add(e.nodeB);
+//		
+//				}
+//				else if(e.nodeB == n){
+//					startEnd.add(e.nodeA);
+//				}
+//
+//			}
+//			
+//			
+//			
+//			if (n==solution.nodes.get(0)){
+//				startEnd.add(solution.nodes.get(0)-width);
+//				endnode = true;
+//			}
+//			
+//			if (n==solution.nodes.get(solution.nodes.size()-1)){
+//				startEnd.add(solution.nodes.get(solution.nodes.size()-1)+width);
+//				endnode = true;
+//			}
+			
+			
+			
+//			if ((solution.nodes.indexOf(startEnd.get(1)) - solution.nodes.indexOf(startEnd.get(0))<0)&& !endnode){
+//
+//				int temp = startEnd.get(1);
+//				startEnd.set(1, startEnd.get(0));
+//				startEnd.set(0, temp);
+//				
+//			}
+			
+			if (startEnd.size()!=2){
+				System.err.println("unable to find matching edge!");
+				return tiles;
+			}
+			
 			int x = n%width;
 			int z = n/width;
 			
-			tiles.add(new Tile(size, size, new Vector3f(location.x+x*size,location.y -size,location.z+z*size)));
-					
+			Tile t = new Tile(size, size, new Vector3f(location.x+(x+0.5f)*size,location.y -size,location.z+(z+0.5f)*size));
+			
+			int start = n-startEnd.get(0);
+			int end = startEnd.get(1)-n;
+			
+			System.out.println(start+" "+end);
+			
+			float rot = 0.0f;
+			
+			
+			if (start - end == 0){
+				t.texture = TEX_STRAIGHT;
+				
+				if (start == width || end == width){
+					rot = 0.0f;
+				}
+				else{
+					rot = 90.0f;
+				}
+				
+			}
+			
+			else{
+				
+				t.texture = TEX_BENT;
+				
+				if ((start == 1 && end == width)|| (start== -width && end == -1)){
+					rot = 0.0f;
+				}
+				
+				else if ((start == 1 && end == -width)|| (start== width && end == -1)){
+					rot = -90.0f;
+				}
+				
+				else if ((start == -1 && end == -width)|| (start== width && end == 1)){
+					rot = 180.0f;
+				}
+				
+				else if ((start == -1 && end == width)|| (start== -width && end == 1)){
+					rot = 90.0f;
+				}
+				
+			}
+			
+			t.rotated(Matrix4f.rotate(Matrix4f.ROTATION_AXIS_Y, rot));
+	
+			tiles.add(t);
 			
 		}
 		
