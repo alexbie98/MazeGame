@@ -2,8 +2,6 @@ package states;
 
 
 import graphics.Shader;
-import main.GameThread;
-import math.Matrix4f;
 import math.Vector3f;
 import screen.Maze;
 import screen.Player;
@@ -20,11 +18,11 @@ public class Test extends GameState{
 		
 		
 		
-		addUpdateable(new Player(new Vector3f(0.0f,0.0f,0.0f), Shader.WORLD));
+		addUpdateable(new Player(new Vector3f(0.0f,20.0f,0.0f), Shader.WORLD));
 		
 		
 		
-		Maze m = new Maze(4.0f, 8, 15, new Vector3f(0.0f,0.0f,0.0f));
+		Maze m = new Maze(4.0f, 15, 15, new Vector3f(0.0f,0.0f,0.0f));
 		
 		for (Wall w: m.getWalls()){
 			addRenderable(w);

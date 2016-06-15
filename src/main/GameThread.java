@@ -31,6 +31,15 @@ public class GameThread implements Runnable{
 	private long window;
 	private long monitor;
 	
+	private long start;
+	private long accumulator = 0;
+	private long end;
+	
+
+	private static final long TPT = 1000/125;
+
+	
+	
 
 	public static final int WIDTH = 1280, HEIGHT = 720;
 	
@@ -50,8 +59,20 @@ public class GameThread implements Runnable{
 				break;
 			}
 			
-			update();
-			render();
+			start = System.currentTimeMillis();
+			
+			
+			if (accumulator > TPT){
+				update();
+				render();
+				
+				accumulator-=TPT;
+			}
+	
+			
+			end = System.currentTimeMillis();
+			
+			accumulator+=(end-start);
 			
 			
 		}
@@ -121,6 +142,8 @@ public class GameThread implements Runnable{
 		
 		GameStateManager.setWindow(window);
 		GameStateManager.goTo(GameStateManager.Test);
+		
+		GLFW.glfwSetKeyCallback(window, Input.controls);
 		
 		
 		

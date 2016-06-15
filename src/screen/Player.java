@@ -6,6 +6,7 @@ import org.lwjgl.glfw.GLFWKeyCallback;
 import graphics.Shader;
 import main.GameStateManager;
 import main.GameThread;
+import main.Input;
 import main.Updateable;
 import math.Matrix4f;
 import math.Vector3f;
@@ -20,7 +21,9 @@ public class Player implements Updateable{
 	public boolean paused = false;
 	
 	public Vector3f location;
-	public Vector3f rot = new Vector3f(0.0f,0.0f,0.0f);
+	public Vector3f rot = new Vector3f(0.0f,180.0f,0.0f);
+	
+	public Vector3f viewRay;
 	
 //	public Matrix4f pr_matrix = Matrix4f.orthographic(50.0f, -50.0f, 50.0f*SCREEN_RATIO, -50.0f*SCREEN_RATIO, 50.0f, -50.0f);
 	
@@ -30,13 +33,11 @@ public class Player implements Updateable{
 	
 	
 	
-	public GLFWKeyCallback camControls;
-	
 	public Shader shader;
 	
-	public Player(Vector3f location, Shader shader){
+	public Player(Vector3f loc, Shader shader){
 		
-		this.location = location;
+		this.location = loc;
 		this.shader = shader;
 		
 		shader.enable();
@@ -44,53 +45,7 @@ public class Player implements Updateable{
 		shader.setUniform4f("vw_matrix", vw_matrix);
 		shader.setUniform1i("tex", 1);
 		shader.disable();
-	
-		camControls = new GLFWKeyCallback() {
-			
-			@Override
-			public void invoke(long window, int key, int scancode, int action, int mods) {
-				
-				//movement
-				if(key == GLFW.GLFW_KEY_W && (action == GLFW.GLFW_REPEAT || action ==GLFW.GLFW_PRESS)){
-					location.z--;
-				}
-				
-				if(key == GLFW.GLFW_KEY_A && (action == GLFW.GLFW_REPEAT || action ==GLFW.GLFW_PRESS)){
-					location.x--;
-				}
-				
-				if(key == GLFW.GLFW_KEY_S && (action == GLFW.GLFW_REPEAT || action ==GLFW.GLFW_PRESS)){
-					location.z++;
-				}
-
-				if(key == GLFW.GLFW_KEY_D && (action == GLFW.GLFW_REPEAT || action ==GLFW.GLFW_PRESS)){
-					location.x++;
-				}
-				
-				
-				//camera movement
-				
-				if(key == GLFW.GLFW_KEY_LEFT && (action == GLFW.GLFW_REPEAT || action ==GLFW.GLFW_PRESS)){
-					rot.y-=3;
-				}
-				
-				if(key == GLFW.GLFW_KEY_RIGHT && (action == GLFW.GLFW_REPEAT || action ==GLFW.GLFW_PRESS)){
-					rot.y+=3;
-				}
-				
-				if(key == GLFW.GLFW_KEY_UP && (action == GLFW.GLFW_REPEAT || action ==GLFW.GLFW_PRESS)){
-					rot.x-=3;
-				}
-
-				if(key == GLFW.GLFW_KEY_DOWN && (action == GLFW.GLFW_REPEAT || action ==GLFW.GLFW_PRESS)){
-					rot.x+=3;
-				}
-				
-
-			}
-		};
 		
-		GLFW.glfwSetKeyCallback(GameStateManager.window, camControls);
 		
 	}
 	
@@ -114,9 +69,82 @@ public class Player implements Updateable{
 	
 	public void updateCamera(){
 		
+		Vector3f move = new Vector3f();
+		
+		
+		
+		//movement
+		
+		if(Input.keys[GLFW.GLFW_KEY_W]){
+			move.x -= (float) Math.cos(Math.toRadians(rot.y+90.0f));
+			move.z -= (float) Math.sin(Math.toRadians(rot.y+90.0f));
+		}
+		
+		if(Input.keys[GLFW.GLFW_KEY_A]){
+			move.x -= (float) Math.cos(Math.toRadians(rot.y));
+			move.z -= (float) Math.sin(Math.toRadians(rot.y));
+		}
+		
+		if(Input.keys[GLFW.GLFW_KEY_S]){
+			move.x += (float) Math.cos(Math.toRadians(rot.y+90.0f));
+			move.z += (float) Math.sin(Math.toRadians(rot.y+90.0f));
+		}
+		
+		if(Input.keys[GLFW.GLFW_KEY_D]){
+			move.x += (float) Math.cos(Math.toRadians(rot.y));
+			move.z += (float) Math.sin(Math.toRadians(rot.y));
+			
+		}
+		
+		if(Input.keys[GLFW.GLFW_KEY_SPACE]){
+			move.y ++;
+			
+		}
+		
+		if(Input.keys[GLFW.GLFW_KEY_LEFT_SHIFT]){
+			move.y--;
+			
+		}
+
+		if (move.getMagnitude()>0.0f){
+			location = Vector3f.add(location,Vector3f.multiply(move.normalized(), 0.3f));
+		}
+		
+		
+		
+		//camera movement
+		
+		if(Input.keys[GLFW.GLFW_KEY_LEFT]){
+			rot.y-=2.0f;
+		}
+		
+		if(Input.keys[GLFW.GLFW_KEY_RIGHT]){
+			rot.y+=2.0f;
+		}
+		
+		if(Input.keys[GLFW.GLFW_KEY_UP]){
+
+			if (rot.x>-80){
+				rot.x-=2.0f * SCREEN_RATIO;
+			}
+
+
+		}
+
+		if(Input.keys[GLFW.GLFW_KEY_DOWN]){
+
+			
+			if (rot.x<80){
+				rot.x+=2.0f * SCREEN_RATIO;
+			}
+		}
+		
+		
+		
 		Matrix4f rot = Matrix4f.rotate(Matrix4f.ROTATION_AXIS_X, this.rot.x).multiply(Matrix4f.rotate(Matrix4f.ROTATION_AXIS_Y, this.rot.y)).multiply(Matrix4f.rotate(Matrix4f.ROTATION_AXIS_Z, this.rot.z));
+		
 		vw_matrix = rot.multiply(Matrix4f.translate(new Vector3f(-location.x,-location.y,-location.z)));
-		System.out.println(location.toString());
+
 		
 		shader.enable();
 		shader.setUniform4f("vw_matrix", vw_matrix);

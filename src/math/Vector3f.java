@@ -33,6 +33,20 @@ public class Vector3f {
 		return false;
 	}
 	
+	public Vector3f normalized(){
+		float magnitude = getMagnitude();
+		
+		this.x = this.x/magnitude;
+		this.y = this.y/magnitude;
+		this.z = this.z/magnitude;
+		
+		return this;
+	}
+	
+	public float getMagnitude(){
+		return (float) Math.sqrt(Math.pow(this.x, 2) + Math.pow(this.y, 2) + Math.pow(this.z, 2));
+	}
+	
 	public static Vector3f subtract(Vector3f a, Vector3f b){
 		Vector3f result = new Vector3f();
 		
@@ -61,5 +75,6 @@ public class Vector3f {
 		result.z = a.z * scalar;
 		return result;
 	}
+	
 
 }
