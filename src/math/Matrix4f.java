@@ -98,26 +98,29 @@ public float[] elements = new float[4 * 4];
 		
 	}
 	
-	// source: http://www.geeks3d.com/20090729/howto-perspective-projection-matrix-in-opengl/
+	// source: http://www.songho.ca/opengl/gl_projectionmatrix.html
 	
-	// fov: Field of view, pi/4 radians is a good value
-	// aspect: Ratio of height to width
-	// znear, zfar: used for clipping
-	
-	public static Matrix4f perspective(float fov, float aspect, float znear, float zfar){
+	public static Matrix4f perspective(float right, float left, float top, float bottom, float far, float near){
 		Matrix4f result = identity();
 		
-		float h = (float) (1.0f/Math.tan(fov*(Math.PI/360.0)));
-		float negDepth = znear -zfar;
-	  	
-	  	result.elements[0] = h/aspect;
-	  	result.elements[5] = h;
-	  	result.elements[10] = (zfar + znear)/negDepth;
-	  	result.elements[11] = -1;
-	  	result.elements[14] = 2.0f/(zfar + znear)/negDepth;;
-	  	result.elements[15] = 0.0f;
-	  	
+//		result.elements[0] = near/(right-left);
+//		result.elements[5] = near / (top-bottom);
+//		result.elements[10] = (far+near)/(far-near);
+//		result.elements[11] = -(2*far*near)/(far-near);
+//		result.elements[14] = 1;
+//		result.elements[15] = 0;
 		
+		result.elements[0] = -7*near/(right-left);
+		result.elements[5] = -7*near / (top-bottom);
+		result.elements[8] = (right+left)/(right-left);
+		result.elements[9] = (top+bottom)/(top-bottom);
+
+		result.elements[10] = (far+near)/(near-far);
+		result.elements[11] = (-2*far*near)/(near-far);
+		result.elements[14] = - 1;
+		result.elements[15] = 0;
+
+	 
 		return result;
 	}
 	

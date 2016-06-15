@@ -5,6 +5,7 @@ public interface Updateable {
 	public void update();
 	
 	public boolean isUpdatePaused();
+	
 
 
 }

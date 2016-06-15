@@ -171,7 +171,6 @@ public class Maze {
 			int start = n-startEnd.get(0);
 			int end = startEnd.get(1)-n;
 			
-			System.out.println(start+" "+end);
 			
 			float rot = 0.0f;
 			
