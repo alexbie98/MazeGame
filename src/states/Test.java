@@ -2,6 +2,7 @@ package states;
 
 
 import graphics.Shader;
+import main.Renderable;
 import math.Vector3f;
 import screen.Maze;
 import screen.Player;
@@ -9,6 +10,8 @@ import screen.Tile;
 import screen.Wall;
 
 public class Test extends GameState{
+	
+	public float mazeSize = 4.0f;
 	
 	
 
@@ -18,19 +21,16 @@ public class Test extends GameState{
 		
 		
 		
-		addUpdateable(new Player(new Vector3f(0.0f,20.0f,0.0f), Shader.WORLD));
+		addUpdateable(new Player(new Vector3f(mazeSize/2.0f,0.0f,mazeSize/2.0f), Shader.WORLD));
 		
 		
 		
-		Maze m = new Maze(4.0f, 15, 15, new Vector3f(0.0f,0.0f,0.0f));
+		Maze m = new Maze(mazeSize, 25, 25, new Vector3f(0.0f,0.0f,0.0f));
 		
-		for (Wall w: m.getWalls()){
-			addRenderable(w);
+		for (Renderable r: m.getRenderables()){
+			addRenderable(r);
 		}
 		
-		for (Tile t: m.getSolutionTiles()){
-			addRenderable(t);
-		}
 		
 		
 		

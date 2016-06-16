@@ -3,15 +3,19 @@ package screen;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWKeyCallback;
 
+import algorithm.BoxCollision;
 import graphics.Shader;
 import main.GameStateManager;
 import main.GameThread;
 import main.Input;
+import main.Renderable;
 import main.Updateable;
 import math.Matrix4f;
 import math.Vector3f;
 
 import static org.lwjgl.opengl.GL11.*;
+
+import java.util.ArrayList;
 
 public class Player implements Updateable{
 	
@@ -31,7 +35,8 @@ public class Player implements Updateable{
 	
 	public Matrix4f vw_matrix = Matrix4f.identity();
 	
-	
+	public float [] boundBox;
+	public Vector3f playerDimensions = new Vector3f(2.0f,3.0f,2.0f); //width, height, length
 	
 	public Shader shader;
 	
@@ -46,6 +51,7 @@ public class Player implements Updateable{
 		shader.setUniform1i("tex", 1);
 		shader.disable();
 		
+		boundBox = createBoundBox(playerDimensions);
 		
 	}
 	
@@ -76,8 +82,11 @@ public class Player implements Updateable{
 		//movement
 		
 		if(Input.keys[GLFW.GLFW_KEY_W]){
+			
+			
 			move.x -= (float) Math.cos(Math.toRadians(rot.y+90.0f));
 			move.z -= (float) Math.sin(Math.toRadians(rot.y+90.0f));
+			
 		}
 		
 		if(Input.keys[GLFW.GLFW_KEY_A]){
@@ -107,7 +116,28 @@ public class Player implements Updateable{
 		}
 
 		if (move.getMagnitude()>0.0f){
-			location = Vector3f.add(location,Vector3f.multiply(move.normalized(), 0.3f));
+			
+			move = Vector3f.multiply(move.normalized(), 0.15f);
+			
+			location = Vector3f.add(location, move);
+
+			float [] futureBox = createBoundBox(playerDimensions);
+			
+			boolean collide = false;
+			
+			for (Renderable r: getNearbyWalls(25.0f)){
+				if (BoxCollision.checkCollision(r, futureBox)){
+					collide = true;
+				
+					break;
+				}
+			}
+			
+			if (collide == true){
+				location = Vector3f.subtract(move, location);
+			}
+			
+			
 		}
 		
 		
@@ -151,11 +181,56 @@ public class Player implements Updateable{
 		shader.disable();
 		
 	}
+	
+	public float [] createBoundBox(Vector3f dimensions){
+		
+		float [] boundBox = new float [6];
+		
+		float width = dimensions.x;
+		float height = dimensions.y;
+		float length = dimensions.z;
+		
+		boundBox[0] = location.x + width/2.0f;
+		boundBox[1] = location.x - width/2.0f;
+		
+		boundBox[2] = location.y + height/2.0f;
+		boundBox[3] = location.y - height/2.0f;
+
+		boundBox[4] = location.z + length/2.0f;
+		boundBox[5] = location.z - length/2.0f;
+		
+		return boundBox;
+
+				
+		
+		
+	}
 
 	@Override
 	public boolean isUpdatePaused() {
 		return paused;
 	}
+	
+	public ArrayList<Wall> getNearbyWalls(float distance){
+		
+		ArrayList<Wall> nearbyWalls = new ArrayList<Wall>();
+		
+		ArrayList<Renderable> renderables = GameStateManager.currentState.getRenderables();
+		
+		for (Renderable r: renderables){
+			if (r instanceof Wall && Vector3f.subtract(location,r.location).getMagnitude() < distance){
+				nearbyWalls.add((Wall) r);
+			}
+		}
+		
+		return nearbyWalls;
+		
+	}
+	
+	
+
+
+
 
 
 }

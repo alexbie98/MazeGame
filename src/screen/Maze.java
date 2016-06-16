@@ -6,6 +6,7 @@ import algorithm.Edge;
 import algorithm.Graph;
 import algorithm.GraphAlgorithm;
 import graphics.Texture;
+import main.Renderable;
 import math.Matrix4f;
 import math.Vector3f;
 
@@ -23,6 +24,7 @@ public class Maze {
 	
 	public ArrayList<Wall> mazeWalls = new ArrayList<>();
 	public ArrayList<Tile> solutionTiles = new ArrayList<>();
+	public ArrayList<Tile> floorTiles = new ArrayList<>();
 	
 	public Graph solution;
 	
@@ -50,6 +52,9 @@ public class Maze {
 		
 		//build the solution tiles from the solution
 		solutionTiles = buildSolutionTiles(solution);
+		
+		//build the floor tiles of the maze
+		floorTiles = buildFloorTiles();
 		
 	}
 	
@@ -97,7 +102,10 @@ public class Maze {
 		}
 		
 		return walls;
+		
 	}
+	
+	
 	
 	public ArrayList<Tile> buildSolutionTiles(Graph solution) {
 		
@@ -166,7 +174,7 @@ public class Maze {
 			int x = n%width;
 			int z = n/width;
 			
-			Tile t = new Tile(size, size, new Vector3f(location.x+(x+0.5f)*size,location.y -size,location.z+(z+0.5f)*size));
+			Tile t = new Tile(size, size, new Vector3f(location.x+(x+0.5f)*size,location.y -size+0.05f,location.z+(z+0.5f)*size));
 			
 			int start = n-startEnd.get(0);
 			int end = startEnd.get(1)-n;
@@ -218,6 +226,27 @@ public class Maze {
 		return tiles;
 	}
 	
+	public ArrayList<Tile> buildFloorTiles(){
+		
+		ArrayList<Tile> floorTiles = new ArrayList<>();
+		
+		for (int i = 0; i<length*width;i++){
+			
+			int x = i%width;
+			int z = i/width;
+			
+			Tile tile = new Tile(size, size, new Vector3f((location.x+x+0.5f)*size,location.y-size,(location.z+z+0.5f)*size));
+			
+			floorTiles.add(tile);
+		}
+		
+		return floorTiles;
+		
+		
+		
+		
+	}
+	
 	public ArrayList<Wall> getWalls(){
 		return mazeWalls;
 	}
@@ -226,6 +255,22 @@ public class Maze {
 		return solutionTiles;
 	}
 	
+	public ArrayList<Tile> getFloorTiles(){
+		return floorTiles;
+	}
+	
+	public ArrayList<Renderable> getRenderables(){
+		
+		
+		ArrayList<Renderable> renderables = new ArrayList<>();
+		
+		renderables.addAll(mazeWalls);
+		renderables.addAll(solutionTiles);
+		renderables.addAll(floorTiles);
+		
+		return renderables;
+		
+	}
 	
 
 }

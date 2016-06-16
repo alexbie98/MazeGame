@@ -47,6 +47,9 @@ public class Vector3f {
 		return (float) Math.sqrt(Math.pow(this.x, 2) + Math.pow(this.y, 2) + Math.pow(this.z, 2));
 	}
 	
+	/**
+	 * subtracts vector a from vector b
+	 */
 	public static Vector3f subtract(Vector3f a, Vector3f b){
 		Vector3f result = new Vector3f();
 		

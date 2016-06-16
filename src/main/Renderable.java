@@ -18,11 +18,11 @@ public abstract class Renderable {
 	public Shader shader;
 	
 	
-	protected float [] vertices;
+	public float [] vertices;
 	protected byte [] indices;
 	protected float [] textureCoordinates; 
 	
-	protected Vector3f location;
+	public Vector3f location;
 	
 	public Renderable(Vector3f location){
 		
@@ -58,6 +58,7 @@ public abstract class Renderable {
 	
 	}
 	
+
 
 
 }
