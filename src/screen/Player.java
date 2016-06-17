@@ -36,7 +36,7 @@ public class Player implements Updateable{
 	public Matrix4f vw_matrix = Matrix4f.identity();
 	
 	public float [] boundBox;
-	public Vector3f playerDimensions = new Vector3f(2.0f,3.0f,2.0f); //width, height, length
+	public Vector3f playerDimensions = new Vector3f(1.0f,3.0f,1.0f); //width, height, length
 	
 	public Shader shader;
 	
@@ -123,15 +123,29 @@ public class Player implements Updateable{
 
 			float [] futureBox = createBoundBox(playerDimensions);
 			
+//			System.out.println(" xmax:"+futureBox[0]+" xmin:"+futureBox[1]+" ymax:"+futureBox[2]+" ymin:"+futureBox[3]+" zmax:"+futureBox[4]+" zmin:"+futureBox[5]);
+			
 			boolean collide = false;
 			
-			for (Renderable r: getNearbyWalls(25.0f)){
+
+			
+
+			for (Renderable r: getNearbyWalls(4.0f)){
+				
+
+				
 				if (BoxCollision.checkCollision(r, futureBox)){
 					collide = true;
-				
+//					float [] renderBox = BoxCollision.createCornerArray(r);
+//					System.out.println(" xmax:"+renderBox[0]+" xmin:"+renderBox[1]+" ymax:"+renderBox[2]+" ymin:"+renderBox[3]+" zmax:"+renderBox[4]+" zmin:"+renderBox[5]);
+
+					
 					break;
 				}
 			}
+
+			
+//			System.out.println();
 			
 			if (collide == true){
 				location = Vector3f.subtract(move, location);

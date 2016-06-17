@@ -25,7 +25,7 @@ public class Test extends GameState{
 		
 		
 		
-		Maze m = new Maze(mazeSize, 25, 25, new Vector3f(0.0f,0.0f,0.0f));
+		Maze m = new Maze(mazeSize, 5, 5, new Vector3f(0.0f,0.0f,0.0f));
 		
 		for (Renderable r: m.getRenderables()){
 			addRenderable(r);
