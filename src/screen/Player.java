@@ -35,10 +35,12 @@ public class Player implements Updateable{
 	
 	public Matrix4f vw_matrix = Matrix4f.identity();
 	
-	public float [] boundBox;
-	public Vector3f playerDimensions = new Vector3f(1.0f,3.0f,1.0f); //width, height, length
+
+	public Vector3f playerDimensions = new Vector3f(1.0f,4.0f,1.0f); //width, height, length
 	
 	public Shader shader;
+	
+	public float deltaY = 0.0f;
 	
 	public Player(Vector3f loc, Shader shader){
 		
@@ -51,7 +53,6 @@ public class Player implements Updateable{
 		shader.setUniform1i("tex", 1);
 		shader.disable();
 		
-		boundBox = createBoundBox(playerDimensions);
 		
 	}
 	
@@ -106,53 +107,105 @@ public class Player implements Updateable{
 		}
 		
 		if(Input.keys[GLFW.GLFW_KEY_SPACE]){
-			move.y ++;
+			deltaY =0.02f;
+			move.y +=0.5f;
 			
 		}
 		
-		if(Input.keys[GLFW.GLFW_KEY_LEFT_SHIFT]){
-			move.y--;
-			
-		}
+//		if(Input.keys[GLFW.GLFW_KEY_LEFT_SHIFT]){
+//			move.y--;
+//			
+//		}
+		
+		boolean collided = false;
 
 		if (move.getMagnitude()>0.0f){
 			
-			move = Vector3f.multiply(move.normalized(), 0.15f);
-			
-			location = Vector3f.add(location, move);
-
-			float [] futureBox = createBoundBox(playerDimensions);
-			
-//			System.out.println(" xmax:"+futureBox[0]+" xmin:"+futureBox[1]+" ymax:"+futureBox[2]+" ymin:"+futureBox[3]+" zmax:"+futureBox[4]+" zmin:"+futureBox[5]);
-			
-			boolean collide = false;
-			
-
-			
-
-			for (Renderable r: getNearbyWalls(4.0f)){
-				
-
-				
-				if (BoxCollision.checkCollision(r, futureBox)){
-					collide = true;
-//					float [] renderBox = BoxCollision.createCornerArray(r);
-//					System.out.println(" xmax:"+renderBox[0]+" xmin:"+renderBox[1]+" ymax:"+renderBox[2]+" ymin:"+renderBox[3]+" zmax:"+renderBox[4]+" zmin:"+renderBox[5]);
-
-					
-					break;
-				}
-			}
-
-			
-//			System.out.println();
-			
-			if (collide == true){
-				location = Vector3f.subtract(move, location);
-			}
-			
+			move = Vector3f.multiply(move.normalized(),0.15f);
 			
 		}
+		
+		location = Vector3f.add(location, move);
+
+		float [] futureBox = createBoundBox(playerDimensions);
+		
+		ArrayList<Renderable> collidedWalls = new ArrayList<Renderable>();
+		
+		for (Renderable r: GameStateManager.currentState.getRenderables()){
+
+			
+			if (BoxCollision.checkCollision(r, futureBox)){
+				
+				collided = true;
+				
+				if (r instanceof Wall){
+
+					collidedWalls.add(r);
+				}
+
+			}
+		}
+		
+		location = Vector3f.subtract(move, location);
+
+
+		
+		
+		if (collided){
+			
+			
+			
+			deltaY = 0.0f;
+			
+			if (location.y< -0.68f){
+				location.y = -0.64f;
+			}
+			
+			if (collidedWalls.size() != 0){
+				
+				float [] boundBox = BoxCollision.sumBoundBoxes(collidedWalls);
+				
+				Vector3f openDirection =  BoxCollision.getOpenDirection(boundBox, futureBox);
+			
+				
+				
+				if (openDirection.x ==0.0f && openDirection.z == 0.0f){
+					move.x = 0.0f;
+					move.z = 0.0f;
+				}
+				
+				if (openDirection.x * move.x < 0.0f && openDirection.x!=0.0f){
+					move.x = 0.0f;
+				}
+				
+				if (openDirection.z * move.z < 0.0f && openDirection.z!=0.0f){
+					move.z = 0.0f;
+				}
+			}
+			
+			move.y = 0.0f;
+			
+			
+			
+
+		
+			
+		}
+		
+		
+		if (!collided){
+			
+			
+			
+			deltaY-=0.001f;
+			move.y = move.y+deltaY;
+			move.x = 0.0f;
+			move.z = 0.0f;
+		}
+		
+		location = Vector3f.add(move, location);
+			
+		System.out.println(location.y);
 		
 		
 		
@@ -207,8 +260,8 @@ public class Player implements Updateable{
 		boundBox[0] = location.x + width/2.0f;
 		boundBox[1] = location.x - width/2.0f;
 		
-		boundBox[2] = location.y + height/2.0f;
-		boundBox[3] = location.y - height/2.0f;
+		boundBox[2] = location.y + height/6.0f;
+		boundBox[3] = location.y - 5.0f/6.0f * height;
 
 		boundBox[4] = location.z + length/2.0f;
 		boundBox[5] = location.z - length/2.0f;
@@ -239,6 +292,22 @@ public class Player implements Updateable{
 		
 		return nearbyWalls;
 		
+	}
+	
+	public ArrayList<Wall> getWalls(){
+		
+		ArrayList<Wall> walls = new ArrayList<Wall>();
+		
+		ArrayList<Renderable> renderables = GameStateManager.currentState.getRenderables();
+		
+		for (Renderable r: renderables){
+			if (r instanceof Wall){
+				walls.add((Wall) r);
+			}
+		}
+		
+		return walls;
+
 	}
 	
 	

@@ -1,6 +1,9 @@
 package algorithm;
 
+import java.util.ArrayList;
+
 import main.Renderable;
+import math.Vector3f;
 
 public class BoxCollision {
 	
@@ -8,8 +11,8 @@ public class BoxCollision {
 
 	public static boolean checkCollision(Renderable a, Renderable b){
 		
-		float [] aBox = createCornerArray(a);
-		float [] bBox = createCornerArray(b);
+		float [] aBox = createBoundBox(a);
+		float [] bBox = createBoundBox(b);
 		
 		return compareBoundingBox(aBox, bBox);
 
@@ -17,7 +20,7 @@ public class BoxCollision {
 	
 	public static boolean checkCollision(Renderable a, float [] bBox){
 		
-		float [] aBox = createCornerArray(a);
+		float [] aBox = createBoundBox(a);
 		
 		return compareBoundingBox(aBox, bBox);
 	}
@@ -44,8 +47,31 @@ public class BoxCollision {
 		
 	}
 	
+	public static Vector3f getOpenDirection(float [] aBox, float [] bBox){
+		
+		Vector3f openDirection = new Vector3f();
+		
+		if (bBox[0] > aBox[0] && bBox[1] > aBox[1]){
+			openDirection.x++;
+		}
+		
+		else if (bBox[0] < aBox[0] && bBox[1] < aBox[1]){
+			openDirection.x--;
+		}
+		
+		if (bBox[4] > aBox[4] && bBox[5] > aBox[5]){
+			openDirection.z++;
+		}
+		
+		else if (bBox[4] < aBox[4] && bBox[5] < aBox[5]){
+			openDirection.z--;
+		}
+		
+		return openDirection;
+	}
 	
-	public static float [] createCornerArray(Renderable r){
+	
+	public static float [] createBoundBox(Renderable r){
 		
 		//[xMax] [xMin] [yMax] [yMin] [zMax] [zMin]
 		
@@ -93,6 +119,40 @@ public class BoxCollision {
 		}
 		
 		return boundBox;
+		
+	}
+	
+	public static float [] sumBoundBoxes(ArrayList<Renderable> renderables){
+		
+		
+		float [] boundBox = createBoundBox(renderables.get(0));
+		
+		for (int i = 1; i<renderables.size();i++){
+			
+			float [] box = createBoundBox(renderables.get(i));
+			
+			for (int j=0; j<6;j++){
+				
+				if (j%2 == 0){
+					if (box[j]> boundBox[j]){
+						boundBox[j] = box[j];
+					}
+				}
+				
+				if (j%2 == 1){
+					if (box[j] < boundBox[j]){
+						boundBox[j] = box[j];
+					}
+				}
+				
+			}
+			
+			
+		}
+		
+		return boundBox;
+		
+		
 		
 	}
 	

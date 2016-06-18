@@ -47,6 +47,29 @@ public class Vector3f {
 		return (float) Math.sqrt(Math.pow(this.x, 2) + Math.pow(this.y, 2) + Math.pow(this.z, 2));
 	}
 	
+	public Vector3f getLargestComponent(){
+		
+		Vector3f positive = new Vector3f(Math.abs(this.x), Math.abs(this.y), Math.abs(this.z));
+		
+		if (positive.x > positive.y && positive.x>positive.z){
+			this.y = 0.0f;
+			this.z = 0.0f;
+
+		}
+		
+		else if (positive.y > positive.z){
+			this.x = 0.0f;
+			this.z = 0.0f;
+		}
+		
+		else {
+			this.x = 0.0f;
+			this.y =0.0f;
+		}
+		
+		return this;
+	}
+	
 	/**
 	 * subtracts vector a from vector b
 	 */
@@ -78,6 +101,8 @@ public class Vector3f {
 		result.z = a.z * scalar;
 		return result;
 	}
+	
+	
 	
 
 }

@@ -96,6 +96,8 @@ public class Maze {
 			walls.add(new Wall(size, new Vector3f(location.x+size*(i-1),location.y,location.z+size*(length))));
 		}
 		
+		walls.add(new Wall(size, new Vector3f(location.x,location.y,location.z)));
+		
 		for (int i=0;i< length;i++){
 			walls.add(new Wall(size, new Vector3f(location.x,location.y,location.z+i*size)).rotated(Matrix4f.rotate(Matrix4f.ROTATION_AXIS_Y, -90)));
 			walls.add(new Wall(size, new Vector3f(location.x+size*(width),+location.y+0.0f,location.z+i*size)).rotated(Matrix4f.rotate(Matrix4f.ROTATION_AXIS_Y, -90)));

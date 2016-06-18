@@ -21,11 +21,11 @@ public class Test extends GameState{
 		
 		
 		
-		addUpdateable(new Player(new Vector3f(mazeSize/2.0f,0.0f,mazeSize/2.0f), Shader.WORLD));
+		addUpdateable(new Player(new Vector3f(mazeSize/2.0f,100.0f,mazeSize/2.0f), Shader.WORLD));
 		
 		
 		
-		Maze m = new Maze(mazeSize, 5, 5, new Vector3f(0.0f,0.0f,0.0f));
+		Maze m = new Maze(mazeSize, 15, 15, new Vector3f(0.0f,0.0f,0.0f));
 		
 		for (Renderable r: m.getRenderables()){
 			addRenderable(r);
