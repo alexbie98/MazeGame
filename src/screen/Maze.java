@@ -15,8 +15,8 @@ public class Maze {
 	public static Texture TEX_STRAIGHT = new Texture("res/forward.png");
 	public static Texture TEX_BENT = new Texture("res/left.png");
 	
-	public final int width;
-	public final int length;
+	public final int mazeWidth;
+	public final int mazeLength;
 	public final Vector3f location;
 	public final float size;
 	
@@ -28,34 +28,40 @@ public class Maze {
 	
 	public Graph solution;
 	
-	public Maze(float size, int width, int length, Vector3f location){
+	public Maze(float size, int mazeWidth, int mazeLength, Vector3f location){
 	
 		this.size = size;
-		this.width = width;
-		this.length = length;
+		this.mazeWidth = mazeWidth;
+		this.mazeLength = mazeLength;
 		this.location = location;
 		
 		//get grid
-		Graph grid = GraphAlgorithm.generateMazeGraph(width, length);
+		Graph grid = GraphAlgorithm.generateMazeGraph(mazeWidth, mazeLength);
 		
 		//get minspan
 		mazeGraph = GraphAlgorithm.kruskal(grid);
 		
 		//get walls from subtracting minSpan from grid
 		Graph mazeWallGraph = GraphAlgorithm.subtract(grid, mazeGraph);
-		
-		//get the solution of the minSpan
-		solution = GraphAlgorithm.RecursiveDepthSolve(mazeGraph, new Graph(), 0, width*length-1);
 
 		//build maze walls from the graph
 		mazeWalls = buildMazeWalls(mazeWallGraph);
-		
-		//build the solution tiles from the solution
-		solutionTiles = buildSolutionTiles(solution);
+
 		
 		//build the floor tiles of the maze
 		floorTiles = buildFloorTiles();
 		
+//		generateSolution(0);
+		
+	}
+	
+	public void generateSolution(int location){
+		
+		//get the solution of the minSpan
+		solution = GraphAlgorithm.RecursiveDepthSolve(mazeGraph, new Graph(), location, mazeWidth*mazeLength-1);
+		
+		//build the solution tiles from the solution
+		solutionTiles = buildSolutionTiles(solution);
 	}
 	
 	
@@ -71,14 +77,14 @@ public class Maze {
 		
 		for (Edge e: mazeWall.edges){
 			
-			Vector3f nodeACoords = new Vector3f(e.nodeA%width, 0.0f, e.nodeA/width);
-			Vector3f nodeBCoords = new Vector3f(e.nodeB%width, 0.0f, e.nodeB/width);
+			Vector3f nodeACoords = new Vector3f(e.nodeA%mazeWidth, 0.0f, e.nodeA/mazeWidth);
+			Vector3f nodeBCoords = new Vector3f(e.nodeB%mazeWidth, 0.0f, e.nodeB/mazeWidth);
 			
 			float largerZ = ((nodeACoords.z>nodeBCoords.z) ? nodeACoords.z : nodeBCoords.z);
 			float largerX = ((nodeACoords.x>nodeBCoords.x) ? nodeACoords.x : nodeBCoords.x);
 			
 			
-			if (Math.abs(e.nodeA-e.nodeB) == width){
+			if (Math.abs(e.nodeA-e.nodeB) == mazeWidth){
 				walls.add(new Wall(size, new Vector3f(location.x+nodeACoords.x*size, location.y, location.z+(largerZ + Wall.THICK)*size)));
 
 			}
@@ -91,16 +97,16 @@ public class Maze {
 		
 		
 		// add outer walls
-		for (int i=1;i< width;i++){
+		for (int i=1;i< mazeWidth;i++){
 			walls.add(new Wall(size, new Vector3f(location.x+size*i,location.y,location.z)));
-			walls.add(new Wall(size, new Vector3f(location.x+size*(i-1),location.y,location.z+size*(length))));
+			walls.add(new Wall(size, new Vector3f(location.x+size*(i-1),location.y,location.z+size*(mazeLength))));
 		}
 		
 		walls.add(new Wall(size, new Vector3f(location.x,location.y,location.z)));
 		
-		for (int i=0;i< length;i++){
+		for (int i=0;i< mazeLength;i++){
 			walls.add(new Wall(size, new Vector3f(location.x,location.y,location.z+i*size)).rotated(Matrix4f.rotate(Matrix4f.ROTATION_AXIS_Y, -90)));
-			walls.add(new Wall(size, new Vector3f(location.x+size*(width),+location.y+0.0f,location.z+i*size)).rotated(Matrix4f.rotate(Matrix4f.ROTATION_AXIS_Y, -90)));
+			walls.add(new Wall(size, new Vector3f(location.x+size*(mazeWidth),+location.y+0.0f,location.z+i*size)).rotated(Matrix4f.rotate(Matrix4f.ROTATION_AXIS_Y, -90)));
 		}
 		
 		return walls;
@@ -122,14 +128,14 @@ public class Maze {
 				startEnd.add(solution.nodes.get(solution.nodes.indexOf(n)-1));
 			}
 			else{
-				startEnd.add(solution.nodes.get(0)-width);
+				startEnd.add(solution.nodes.get(0)-mazeWidth);
 			}
 			
 			if (n!=solution.nodes.get(solution.nodes.size()-1)){
 				startEnd.add(solution.nodes.get(solution.nodes.indexOf(n)+1));
 			}
 			else{
-				startEnd.add(solution.nodes.get(solution.nodes.size()-1)+width);
+				startEnd.add(solution.nodes.get(solution.nodes.size()-1)+mazeWidth);
 			}
 			
 			
@@ -173,8 +179,8 @@ public class Maze {
 				return tiles;
 			}
 			
-			int x = n%width;
-			int z = n/width;
+			int x = n%mazeWidth;
+			int z = n/mazeWidth;
 			
 			Tile t = new Tile(size, size, new Vector3f(location.x+(x+0.5f)*size,location.y -size+0.05f,location.z+(z+0.5f)*size));
 			
@@ -188,7 +194,7 @@ public class Maze {
 			if (start - end == 0){
 				t.texture = TEX_STRAIGHT;
 				
-				if (start == width || end == width){
+				if (start == mazeWidth || end == mazeWidth){
 					rot = 0.0f;
 				}
 				else{
@@ -201,19 +207,19 @@ public class Maze {
 				
 				t.texture = TEX_BENT;
 				
-				if ((start == 1 && end == width)|| (start== -width && end == -1)){
+				if ((start == 1 && end == mazeWidth)|| (start== -mazeWidth && end == -1)){
 					rot = 0.0f;
 				}
 				
-				else if ((start == 1 && end == -width)|| (start== width && end == -1)){
+				else if ((start == 1 && end == -mazeWidth)|| (start== mazeWidth && end == -1)){
 					rot = -90.0f;
 				}
 				
-				else if ((start == -1 && end == -width)|| (start== width && end == 1)){
+				else if ((start == -1 && end == -mazeWidth)|| (start== mazeWidth && end == 1)){
 					rot = 180.0f;
 				}
 				
-				else if ((start == -1 && end == width)|| (start== -width && end == 1)){
+				else if ((start == -1 && end == mazeWidth)|| (start== -mazeWidth && end == 1)){
 					rot = 90.0f;
 				}
 				
@@ -232,10 +238,10 @@ public class Maze {
 		
 		ArrayList<Tile> floorTiles = new ArrayList<>();
 		
-		for (int i = 0; i<length*width;i++){
+		for (int i = 0; i<mazeLength*mazeWidth;i++){
 			
-			int x = i%width;
-			int z = i/width;
+			int x = i%mazeWidth;
+			int z = i/mazeWidth;
 			
 			Tile tile = new Tile(size, size, new Vector3f((location.x+x+0.5f)*size,location.y-size,(location.z+z+0.5f)*size));
 			
@@ -267,7 +273,7 @@ public class Maze {
 		ArrayList<Renderable> renderables = new ArrayList<>();
 		
 		renderables.addAll(mazeWalls);
-		renderables.addAll(solutionTiles);
+//		renderables.addAll(solutionTiles);
 		renderables.addAll(floorTiles);
 		
 		return renderables;

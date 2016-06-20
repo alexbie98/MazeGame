@@ -3,19 +3,29 @@ package screen;
 import graphics.Shader;
 import graphics.Texture;
 import main.Renderable;
+import main.Updateable;
 import math.Matrix4f;
 import math.Vector3f;
 
-public class Box extends Renderable {
+public class Cube extends Renderable implements Updateable{
 	
-	public float length = 0;
 
-	public Box(float length, Vector3f location) {
+
+	public float length;
+	public boolean paused = false;
+	private int tick = 0;
+	
+	Vector3f rotation = new Vector3f(0.0f, 0.0f, 00.0f);
+	
+	
+	public Cube(float length, Vector3f location) {
 		super(location);
 		this.length = length;
 
 		build();
 		generate();
+		
+		rotate(Matrix4f.rotate(ROTATION_AXIS_X, 225.0f).multiply(Matrix4f.rotate(ROTATION_AXIS_Y, -45.0f)).multiply(Matrix4f.rotate(ROTATION_AXIS_Z, 0.0f)));
 	}
 
 	@Override
@@ -67,7 +77,7 @@ public class Box extends Renderable {
 
 	@Override
 	protected void defineTexture() {
-		texture = new Texture("res/stone.png");
+		texture = new Texture("res/cube.png");
 		
 		textureCoordinates = new float [] {
 				
@@ -137,6 +147,65 @@ public class Box extends Renderable {
 				
 		};
 	}
+
+	@Override
+	public void update() {
+		
+		if (paused){
+			return;
+		}
+		
+		rotation.y = 0.2f;
+		
+		rotate(Matrix4f.rotate(ROTATION_AXIS_X, rotation.x).multiply(Matrix4f.rotate(ROTATION_AXIS_Y, rotation.y)).multiply(Matrix4f.rotate(ROTATION_AXIS_Z, rotation.z)));
+		generate();
+	
+		
+		tick++;
+		
+		
+		
+		
+	}
+
+	@Override
+	public boolean isUpdatePaused() {
+		return paused;
+	}
+	
+	public void rotate(Matrix4f rot){
+		
+		if (vertexArray==null){ 
+			System.err.println("build and generate first before rotating!");
+		}
+		
+//		System.out.println("original");
+//		for (int i = 0; i< 24;i++){
+//
+//			System.out.println(vertices[i*3]+" "+vertices[i*3+1]+" "+vertices[i*3+2]);
+//		}
+		
+		Vector3f [] vectorVertices = new Vector3f [vertices.length/3];
+		
+		for (int i = 0; i< 24;i++){
+			
+			
+			
+			vectorVertices[i] = rot.multiply(new Vector3f(this.vertices[i*3] - location.x, this.vertices[i*3+1]-location.y, this.vertices[i*3+2] -location.z));
+		}
+		
+		for (int i=0;i<24;i++){
+			
+			
+			this.vertices[3*i] = vectorVertices[i].x + location.x; 
+			this.vertices[3*i+1] = vectorVertices[i].y + location.y; 
+			this.vertices[3*i+2] = vectorVertices[i].z + location.z; 
+		}
+		
+		
+	}
+	
+	
 	
 
 }

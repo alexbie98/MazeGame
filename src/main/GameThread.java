@@ -23,12 +23,11 @@ import org.lwjgl.opengl.GL15;
 import graphics.Shader;
 import math.Matrix4f;
 import math.Vector3f;
-import screen.Box;
 
 public class GameThread implements Runnable{
 	
 	
-	private long window;
+	public long window;
 	private long monitor;
 	
 	private long start;
@@ -42,6 +41,8 @@ public class GameThread implements Runnable{
 	
 
 	public static final int WIDTH = 1280, HEIGHT = 720;
+	
+	public static final float SCREEN_RATIO = (float) HEIGHT / (float) WIDTH;
 	
 
 	
@@ -97,26 +98,6 @@ public class GameThread implements Runnable{
 		
 		window = GLFW.glfwCreateWindow(WIDTH, HEIGHT, "MazeGame", 0, 0);
 		
-		GLFW.glfwSetKeyCallback(window, new GLFWKeyCallback() {
-			
-			@Override
-			public void invoke(long window, int key, int scancode, int action, int mods) {
-				
-				if(key == GLFW.GLFW_KEY_ESCAPE && action == GLFW.GLFW_RELEASE){
-					GLFW.glfwSetWindowShouldClose(window, GLFW.GLFW_TRUE);
-					
-					
-				}
-				
-				
-			}
-		});
-		
-		
-		
-		
-		
-		
 		
 		GLFW.glfwMakeContextCurrent(window);
 		GL.createCapabilities();
@@ -141,9 +122,10 @@ public class GameThread implements Runnable{
 		Shader.loadAll();
 		
 		GameStateManager.setWindow(window);
-		GameStateManager.goTo(GameStateManager.Test);
+		GLFW.glfwSetKeyCallback(GameStateManager.window, Input.controls);
+		GameStateManager.goTo(GameStateManager.Title);
 		
-		GLFW.glfwSetKeyCallback(window, Input.controls);
+		
 		
 		
 		

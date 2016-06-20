@@ -70,6 +70,17 @@ public abstract class GameState {
 	public abstract void onStart();
 	public abstract void onExit();
 	
+	// state update takes place before all the updateables
+	public abstract void selfUpdate();
+	
+	// reserved for code that needs to be ran on state restoration
+	public abstract void onRestore();
+	
+	public void empty(){
+		renderables.clear();
+		updateables.clear();
+	}
+	
 	
 	
 	

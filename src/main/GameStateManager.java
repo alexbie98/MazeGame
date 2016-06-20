@@ -1,7 +1,11 @@
 package main;
 
+import org.lwjgl.opengl.GL11;
+
 import states.GameState;
-import states.Test;
+import states.Play;
+import states.Title;
+import states.Pause;
 
 public class GameStateManager {
 	
@@ -9,7 +13,9 @@ public class GameStateManager {
 	public static GameState lastState;
 	public static long window;
 	
-	public static GameState Test = new Test();
+	public static GameState Play = new Play();
+	public static GameState Title = new Title();
+	public static GameState Pause = new Pause();
 	
 	
 	private GameStateManager(){}
@@ -29,6 +35,8 @@ public class GameStateManager {
 			return;
 		}
 		
+		currentState.selfUpdate();
+		
 		for (Updateable u: currentState.getUpdateables()){
 			
 			if(!u.isUpdatePaused()){
@@ -41,13 +49,21 @@ public class GameStateManager {
 	public static void goTo(GameState nextState){
 		
 		if (currentState!= null){
+			
+			
 			currentState.onExit();
 			
 			lastState = currentState;
 		}
 		
 		currentState = nextState;
-		currentState.onStart();
+		
+		if (currentState.isPausedState()){
+			currentState.onRestore();
+		}
+		else{
+			currentState.onStart();
+		}
 		
 		
 	}

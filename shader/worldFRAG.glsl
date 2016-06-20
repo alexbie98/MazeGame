@@ -16,7 +16,7 @@ void main()
 	
 	color = texture(tex, fs_in.tc);
 	
-	if(color.w == 0){
+	if (color.w == 0){
 		discard;
 	}
 

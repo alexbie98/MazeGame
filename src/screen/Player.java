@@ -25,7 +25,7 @@ public class Player implements Updateable{
 	public boolean paused = false;
 	
 	public Vector3f location;
-	public Vector3f rot = new Vector3f(0.0f,180.0f,0.0f);
+	public Vector3f rot = new Vector3f(45.0f,135.0f,0.0f);
 	
 	public Vector3f viewRay;
 	
@@ -47,13 +47,18 @@ public class Player implements Updateable{
 		this.location = loc;
 		this.shader = shader;
 		
+		
+		setShaderUniforms();
+		
+		
+	}
+	
+	public void setShaderUniforms(){
 		shader.enable();
 		shader.setUniform4f("pr_matrix", pr_matrix);
 		shader.setUniform4f("vw_matrix", vw_matrix);
 		shader.setUniform1i("tex", 1);
 		shader.disable();
-		
-		
 	}
 	
 
@@ -106,11 +111,11 @@ public class Player implements Updateable{
 			
 		}
 		
-		if(Input.keys[GLFW.GLFW_KEY_SPACE]){
-			deltaY =0.02f;
-			move.y +=0.5f;
-			
-		}
+//		if(Input.keys[GLFW.GLFW_KEY_SPACE]){
+//			deltaY =0.02f;
+//			move.y +=0.5f;
+//			
+//		}
 		
 //		if(Input.keys[GLFW.GLFW_KEY_LEFT_SHIFT]){
 //			move.y--;
@@ -121,7 +126,7 @@ public class Player implements Updateable{
 
 		if (move.getMagnitude()>0.0f){
 			
-			move = Vector3f.multiply(move.normalized(),0.15f);
+			move = Vector3f.multiply(move.normalized(),0.10f);
 			
 		}
 		
@@ -205,24 +210,24 @@ public class Player implements Updateable{
 		
 		location = Vector3f.add(move, location);
 			
-		System.out.println(location.y);
+
 		
 		
 		
 		//camera movement
 		
 		if(Input.keys[GLFW.GLFW_KEY_LEFT]){
-			rot.y-=2.0f;
+			rot.y-=1.5f;
 		}
 		
 		if(Input.keys[GLFW.GLFW_KEY_RIGHT]){
-			rot.y+=2.0f;
+			rot.y+=1.5f;
 		}
 		
 		if(Input.keys[GLFW.GLFW_KEY_UP]){
 
 			if (rot.x>-80){
-				rot.x-=2.0f * SCREEN_RATIO;
+				rot.x-=1.5f * SCREEN_RATIO;
 			}
 
 
@@ -232,7 +237,7 @@ public class Player implements Updateable{
 
 			
 			if (rot.x<80){
-				rot.x+=2.0f * SCREEN_RATIO;
+				rot.x+=1.5f * SCREEN_RATIO;
 			}
 		}
 		

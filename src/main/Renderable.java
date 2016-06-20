@@ -17,6 +17,8 @@ public abstract class Renderable {
 	public Texture texture;
 	public Shader shader;
 	
+	public boolean collidable;
+	
 	
 	public float [] vertices;
 	protected byte [] indices;
@@ -56,6 +58,14 @@ public abstract class Renderable {
 		vertexArray.draw();
 		vertexArray.unbind();
 	
+	}
+	
+	public boolean getCollidable(){
+		return collidable;
+	}
+	
+	public void setCollidable(boolean collidable){
+		this.collidable = collidable;
 	}
 	
 
